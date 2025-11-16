@@ -13,11 +13,11 @@ A social experiment and treasure hunt app where physical QR codes placed around 
 ## Essential Features
 
 ### Location Conversation Thread
-- **Functionality**: Display all messages for a specific location in chronological order, allow users to post new messages
-- **Purpose**: Enable asynchronous conversations between people who visit the same physical location
+- **Functionality**: Display only the most recent message for a location, allow users to reply to that message
+- **Purpose**: Create a chain of replies where each person responds to the last visitor, forming an intimate one-to-one conversation thread
 - **Trigger**: User scans QR code at physical location
-- **Progression**: Scan QR → Decode location ID → View message thread → Read previous messages → Compose reply → Submit → See confirmation
-- **Success criteria**: Messages persist, display correctly, and new messages appear immediately after posting
+- **Progression**: Scan QR → Decode location ID → View last message → Read previous visitor's message → Compose reply → Submit → See confirmation
+- **Success criteria**: Only the last message is visible, new messages become the "last message", creating a conversation chain
 
 ### Non-obvious URL Encoding
 - **Functionality**: Generate URLs using base64 encoding of location identifiers
@@ -34,11 +34,11 @@ A social experiment and treasure hunt app where physical QR codes placed around 
 - **Success criteria**: Visits persist across sessions, progress accurately reflects discovered locations
 
 ### Admin Dashboard
-- **Functionality**: GitHub owner login to view all messages across all locations, monitor conversations, see analytics
-- **Purpose**: Allow creator to moderate and understand how the experiment is being used
-- **Trigger**: Owner accesses admin route
-- **Progression**: Navigate to admin → Check GitHub auth → Show all locations → View messages by location → See timestamps and metadata
-- **Success criteria**: Only owner can access, all messages visible, organized by location
+- **Functionality**: GitHub owner login to view all messages across all locations (full history), monitor conversations, see analytics
+- **Purpose**: Allow creator to moderate and understand how the experiment is being used, view the full conversation history that regular users cannot see
+- **Trigger**: Owner accesses hidden admin trigger on home page
+- **Progression**: Click hidden element → Navigate to admin → Check GitHub auth → Show all locations → View all messages by location → See timestamps and metadata
+- **Success criteria**: Only owner can access, all messages visible (not just last message), organized by location, admin button is very subtle/hidden
 
 ### Message Posting
 - **Functionality**: Simple form to compose and submit messages to a location thread
@@ -56,7 +56,7 @@ A social experiment and treasure hunt app where physical QR codes placed around 
 - **Admin access without ownership**: Redirect to public view with message about owner-only access
 
 ## Design Direction
-The design should feel urban and mysterious with a street art aesthetic - like finding hidden art installations around the city. It should balance digital minimalism with the tactile feeling of leaving messages on a physical bulletin board. The interface should feel immediate and raw, not over-polished.
+The design should feel urban and mysterious with a street art aesthetic - like finding hidden art installations around the city. It should balance digital minimalism with the tactile feeling of leaving messages in a chain letter. The interface should feel immediate and raw, not over-polished. Locations are anonymous (numbered only) to maintain mystery and encourage exploration without preconceptions.
 
 ## Color Selection
 Custom palette - inspired by Tokyo neon nights and urban exploration

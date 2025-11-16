@@ -111,7 +111,7 @@ export function AdminDashboard({ onExit }: AdminDashboardProps) {
               {LOCATIONS.map((location) => (
                 <TabsTrigger key={location.id} value={location.id.toString()} className="flex items-center gap-2">
                   <ChatCircle size={16} weight={allMessages[location.id]?.length > 0 ? 'fill' : 'regular'} />
-                  {location.name}
+                  Location #{location.id}
                   {allMessages[location.id]?.length > 0 && (
                     <span className="ml-1 text-xs bg-accent text-accent-foreground rounded-full px-2 py-0.5">
                       {allMessages[location.id].length}
@@ -125,9 +125,10 @@ export function AdminDashboard({ onExit }: AdminDashboardProps) {
           {LOCATIONS.map((location) => (
             <TabsContent key={location.id} value={location.id.toString()} className="space-y-4 mt-6">
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold">{location.name}</h2>
-                <p className="text-muted-foreground">{location.description}</p>
-                <p className="text-xs font-mono text-muted-foreground">Location #{location.id}</p>
+                <h2 className="text-2xl font-bold font-mono">Location #{location.id}</h2>
+                <p className="text-sm text-muted-foreground">
+                  {allMessages[location.id]?.length || 0} message{allMessages[location.id]?.length === 1 ? '' : 's'}
+                </p>
               </div>
 
               {!allMessages[location.id] || allMessages[location.id].length === 0 ? (

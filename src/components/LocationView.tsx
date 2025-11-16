@@ -4,7 +4,6 @@ import { Message, LOCATIONS, getLocationById } from '@/lib/locations'
 import { MessageCard } from '@/components/MessageCard'
 import { MessageComposer } from '@/components/MessageComposer'
 import { TreasureHunt } from '@/components/TreasureHunt'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Button } from '@/components/ui/button'
 import { MapPin, ArrowLeft } from '@phosphor-icons/react'
 import { toast } from 'sonner'
@@ -67,6 +66,10 @@ export function LocationView({ locationId, onBack }: LocationViewProps) {
     }
   }
 
+  const lastMessage = messages && messages.length > 0 
+    ? messages[messages.length - 1] 
+    : null
+
   return (
     <div className="min-h-screen">
       <div className="max-w-3xl mx-auto p-6 space-y-6">
@@ -82,18 +85,19 @@ export function LocationView({ locationId, onBack }: LocationViewProps) {
         >
           <div className="flex items-center gap-3">
             <MapPin className="text-accent" size={32} weight="fill" />
-            <h1 className="text-3xl font-bold font-mono">{location.name}</h1>
+            <h1 className="text-3xl font-bold font-mono">Location #{location.id}</h1>
           </div>
-          <p className="text-muted-foreground text-lg">{location.description}</p>
-          <p className="text-xs font-mono text-muted-foreground">Location #{location.id}</p>
+          <p className="text-muted-foreground text-lg">
+            Read the last message and reply to continue the conversation.
+          </p>
         </motion.div>
 
         <TreasureHunt currentLocationId={locationId} />
 
         <div className="space-y-4">
-          <h2 className="text-xl font-bold">Messages from Visitors</h2>
+          <h2 className="text-xl font-bold">Last Message</h2>
           
-          {!messages || messages.length === 0 ? (
+          {!lastMessage ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -104,14 +108,17 @@ export function LocationView({ locationId, onBack }: LocationViewProps) {
               </p>
             </motion.div>
           ) : (
-            <div className="space-y-3">
-              {messages
-                .sort((a, b) => b.timestamp - a.timestamp)
-                .map((message, index) => (
-                  <MessageCard key={message.id} message={message} index={index} />
-                ))}
-            </div>
+            <MessageCard message={lastMessage} index={0} />
           )}
+        </div>
+
+        <div className="space-y-2">
+          <h2 className="text-xl font-bold">Your Reply</h2>
+          <p className="text-sm text-muted-foreground">
+            {lastMessage 
+              ? `Reply to ${lastMessage.author || 'the previous visitor'}` 
+              : 'Start the conversation'}
+          </p>
         </div>
 
         <MessageComposer
