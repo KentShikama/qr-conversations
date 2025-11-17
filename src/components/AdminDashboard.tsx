@@ -20,14 +20,10 @@ export function AdminDashboard({ onExit }: AdminDashboardProps) {
     const checkAuth = async () => {
       try {
         const userData = await window.spark.user()
-        if (!userData || !userData.isOwner) {
-          onExit()
-          return
-        }
         setUser(userData)
         await loadAllMessages()
       } catch (error) {
-        onExit()
+        console.error('Error loading admin dashboard:', error)
       } finally {
         setIsLoading(false)
       }
@@ -62,10 +58,6 @@ export function AdminDashboard({ onExit }: AdminDashboardProps) {
     )
   }
 
-  if (!user) {
-    return null
-  }
-
   const totalMessages = Object.values(allMessages).reduce((sum, msgs) => sum + msgs.length, 0)
 
   return (
@@ -74,7 +66,7 @@ export function AdminDashboard({ onExit }: AdminDashboardProps) {
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <h1 className="text-3xl font-bold font-mono">Admin Dashboard</h1>
-            <p className="text-muted-foreground">Welcome, {user.login}</p>
+            {user && <p className="text-muted-foreground">Welcome, {user.login}</p>}
           </div>
           <Button onClick={onExit} variant="outline">
             <SignOut className="mr-2" />
