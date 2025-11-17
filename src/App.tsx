@@ -23,7 +23,11 @@ function App() {
         if (locationId) {
           setCurrentLocationId(locationId)
           setCurrentView('location')
+        } else {
+          setCurrentView('home')
         }
+      } else {
+        setCurrentView('home')
       }
     }
 
