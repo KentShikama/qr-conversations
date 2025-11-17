@@ -4,7 +4,7 @@ import { Message, getLocationById } from '@/lib/locations'
 import { MessageCard } from '@/components/MessageCard'
 import { MessageComposer } from '@/components/MessageComposer'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Heart, ClockCounterClockwise } from '@phosphor-icons/react'
+import { ArrowLeft, Heart } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 
 interface LocationViewProps {
@@ -15,13 +15,20 @@ interface LocationViewProps {
 export function LocationView({ locationId, onBack }: LocationViewProps) {
   const location = getLocationById(locationId)
   const [messages, setMessages] = useKV<Message[]>(`messages_${locationId}`, [])
+  const [lastSubmittedMessage, setLastSubmittedMessage] = useKV<Message | null>(`last_submitted_${locationId}`, null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showThankYou, setShowThankYou] = useState(false)
-  const [showHistory, setShowHistory] = useState(false)
 
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [locationId])
+
+  useEffect(() => {
+    const hash = window.location.hash
+    if (hash.includes('thankyou') && lastSubmittedMessage) {
+      setShowThankYou(true)
+    }
+  }, [lastSubmittedMessage])
 
   if (!location) {
     return (
@@ -52,7 +59,9 @@ export function LocationView({ locationId, onBack }: LocationViewProps) {
       }
 
       setMessages((current) => [...(current || []), newMessage])
+      setLastSubmittedMessage(newMessage)
       setShowThankYou(true)
+      window.location.hash = `/${window.location.hash.split('/')[1]}/thankyou`
     } catch (error) {
       console.error(error)
     } finally {
@@ -64,7 +73,7 @@ export function LocationView({ locationId, onBack }: LocationViewProps) {
     ? messages[messages.length - 1] 
     : null
 
-  if (showThankYou) {
+  if (showThankYou && lastSubmittedMessage) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
         <motion.div
@@ -86,6 +95,11 @@ export function LocationView({ locationId, onBack }: LocationViewProps) {
             <p className="text-lg text-muted-foreground leading-relaxed">
               あなたのメッセージを次の方に届けます。
             </p>
+          </div>
+
+          <div className="mt-8 space-y-4">
+            <div className="text-sm text-muted-foreground">あなたのメッセージ:</div>
+            <MessageCard message={lastSubmittedMessage} index={0} />
           </div>
 
           <Button 
@@ -128,34 +142,6 @@ export function LocationView({ locationId, onBack }: LocationViewProps) {
               <MessageCard message={lastMessage} index={0} />
             )}
           </motion.div>
-
-          {messages && messages.length > 1 && (
-            <div className="space-y-3">
-              <Button
-                onClick={() => setShowHistory(!showHistory)}
-                variant="outline"
-                size="sm"
-                className="w-full"
-              >
-                <ClockCounterClockwise className="mr-2" />
-                {showHistory ? '履歴を非表示' : `過去のメッセージを見る (${messages.length - 1}件)`}
-              </Button>
-
-              {showHistory && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="space-y-3"
-                >
-                  {messages.slice(0, -1).reverse().map((message, index) => (
-                    <MessageCard key={message.id} message={message} index={index} />
-                  ))}
-                </motion.div>
-              )}
-            </div>
-          )}
 
           <MessageComposer
             locationId={locationId}
