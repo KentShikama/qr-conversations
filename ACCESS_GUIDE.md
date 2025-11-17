@@ -9,32 +9,35 @@ This is your landing page that explains the concept.
 
 ## 📍 Location Pages
 
-Location pages use **encoded URLs** to make them slightly less obvious. Here's how to access them:
+Location pages use **encoded URLs** that are not immediately sequential. Here's how to access them:
 
 ### Format
 `/#/{encoded_location_id}`
+
+Each encoded ID is a 10-character hash that uniquely identifies a location without revealing its sequence number.
 
 ### Example URLs for Testing
 
 Here are the encoded URLs for all 10 locations:
 
-1. **Location #1:** `/#/t01`
-2. **Location #2:** `/#/t02`
-3. **Location #3:** `/#/t03`
-4. **Location #4:** `/#/t04`
-5. **Location #5:** `/#/t05`
-6. **Location #6:** `/#/t06`
-7. **Location #7:** `/#/t07`
-8. **Location #8:** `/#/t08`
-9. **Location #9:** `/#/t09`
-10. **Location #10:** `/#/t0a`
+1. **Location #1:** `/#/0lsmqxg01e`
+2. **Location #2:** `/#/0lsmqxg91i`
+3. **Location #3:** `/#/0lsmqxg21f`
+4. **Location #4:** `/#/0lsmqxg71h`
+5. **Location #5:** `/#/0lsmqxg01g`
+6. **Location #6:** `/#/0lsmqxg91k`
+7. **Location #7:** `/#/0lsmqxg21h`
+8. **Location #8:** `/#/0lsmqxg71j`
+9. **Location #9:** `/#/0lsmqxg01i`
+10. **Location #10:** `/#/0lsmqxg61j`
 
 ### What These URLs Encode
-Each encoded string uses hexadecimal notation prefixed with 't':
-- Location 1: `t` + `01` (hex) = `t01`
-- Location 10: `t` + `0a` (hex) = `t0a`
+Each encoded string is generated using:
+- A hash of the location ID combined with a salt
+- A checksum for validation
+- Base36 encoding for compact representation
 
-This makes the URLs short and slightly obfuscated.
+This makes the URLs harder to guess sequentially while remaining shareable.
 
 ---
 
@@ -60,10 +63,10 @@ The admin button on the home page is **intentionally hidden** (it's a tiny invis
 To test the app locally, open these URLs in your browser:
 
 ```
-http://localhost:5173/          → Home page
-http://localhost:5173/#/t01     → Location #1
-http://localhost:5173/#/t02     → Location #2
-http://localhost:5173/#/admin   → Admin dashboard
+http://localhost:5173/                  → Home page
+http://localhost:5173/#/0lsmqxg01e      → Location #1
+http://localhost:5173/#/0lsmqxg91i      → Location #2
+http://localhost:5173/#/admin           → Admin dashboard
 ```
 
 ---
@@ -74,16 +77,21 @@ If you need to generate URLs programmatically or create QR codes:
 
 ```javascript
 // The encoding function (already in your codebase at src/lib/locations.ts)
-function encodeLocationId(id) {
-  const hex = id.toString(16).padStart(2, '0')
-  return `t${hex}`
-}
+import { encodeLocationId, generateLocationUrl } from '@/lib/locations'
 
-// Example: Generate URL for location 5
+// Generate encoded ID for a location
 const encoded = encodeLocationId(5)
-const url = `https://yoursite.com/#/${encoded}`
-// Result: https://yoursite.com/#/t05
+// Result: "0lsmqxg01g"
+
+// Generate full URL for a location
+const url = generateLocationUrl(5)
+// Result: "https://yoursite.com/#/0lsmqxg01g"
 ```
+
+The encoding uses a hash-based approach with salt and checksum, making it:
+- **Non-sequential:** Can't guess location 2 from location 1
+- **Validated:** Invalid codes are rejected
+- **Compact:** Only 10 characters long
 
 ---
 
