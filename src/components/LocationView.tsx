@@ -16,6 +16,7 @@ export function LocationView({ locationId, onBack }: LocationViewProps) {
   const location = getLocationById(locationId)
   const [messages, setMessages] = useKV<Message[]>(`messages_${locationId}`, [])
   const [lastSubmittedMessage, setLastSubmittedMessage] = useKV<Message | null>(`last_submitted_${locationId}`, null)
+  const [replyToMyMessage, setReplyToMyMessage] = useKV<Message | null>(`reply_to_my_message_${locationId}`, null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showThankYou, setShowThankYou] = useState(false)
 
@@ -29,6 +30,16 @@ export function LocationView({ locationId, onBack }: LocationViewProps) {
       setShowThankYou(true)
     }
   }, [lastSubmittedMessage])
+
+  useEffect(() => {
+    if (lastSubmittedMessage && messages) {
+      const myMessageIndex = messages.findIndex(m => m.id === lastSubmittedMessage.id)
+      if (myMessageIndex !== -1 && myMessageIndex < messages.length - 1) {
+        const reply = messages[myMessageIndex + 1]
+        setReplyToMyMessage(reply)
+      }
+    }
+  }, [messages, lastSubmittedMessage, setReplyToMyMessage])
 
   if (!location) {
     return (
@@ -101,6 +112,13 @@ export function LocationView({ locationId, onBack }: LocationViewProps) {
             <div className="text-sm text-muted-foreground">あなたのメッセージ:</div>
             <MessageCard message={lastSubmittedMessage} index={0} />
           </div>
+
+          {replyToMyMessage && (
+            <div className="mt-8 space-y-4">
+              <div className="text-sm text-muted-foreground">あなたへの返信:</div>
+              <MessageCard message={replyToMyMessage} index={0} />
+            </div>
+          )}
 
           <Button 
             onClick={onBack} 
