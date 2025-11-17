@@ -20,16 +20,16 @@ Each encoded ID is a 10-character hash that uniquely identifies a location witho
 
 Here are the encoded URLs for all 10 locations:
 
-1. **Location #1:** `/#/0lsmqxg01e`
-2. **Location #2:** `/#/0lsmqxg91i`
-3. **Location #3:** `/#/0lsmqxg21f`
-4. **Location #4:** `/#/0lsmqxg71h`
-5. **Location #5:** `/#/0lsmqxg01g`
-6. **Location #6:** `/#/0lsmqxg91k`
-7. **Location #7:** `/#/0lsmqxg21h`
-8. **Location #8:** `/#/0lsmqxg71j`
-9. **Location #9:** `/#/0lsmqxg01i`
-10. **Location #10:** `/#/0lsmqxg61j`
+1. **Location #1:** `/#/6trgpq500e`
+2. **Location #2:** `/#/6trgpq5c0i`
+3. **Location #3:** `/#/6trgpq5h0f`
+4. **Location #4:** `/#/6trgpq5m0m`
+5. **Location #5:** `/#/6trgpq5r0g`
+6. **Location #6:** `/#/6trgpq5w0n`
+7. **Location #7:** `/#/6trgpq6h0h`
+8. **Location #8:** `/#/6trgpq6m0o`
+9. **Location #9:** `/#/6trgpq6r0i`
+10. **Location #10:** `/#/6trgpq6v0k`
 
 ### What These URLs Encode
 Each encoded string is generated using:
@@ -64,8 +64,8 @@ To test the app locally, open these URLs in your browser:
 
 ```
 http://localhost:5173/                  → Home page
-http://localhost:5173/#/0lsmqxg01e      → Location #1
-http://localhost:5173/#/0lsmqxg91i      → Location #2
+http://localhost:5173/#/6trgpq500e      → Location #1
+http://localhost:5173/#/6trgpq5c0i      → Location #2
 http://localhost:5173/#/admin           → Admin dashboard
 ```
 
@@ -81,11 +81,11 @@ import { encodeLocationId, generateLocationUrl } from '@/lib/locations'
 
 // Generate encoded ID for a location
 const encoded = encodeLocationId(5)
-// Result: "0lsmqxg01g"
+// Result: "6trgpq5r0g"
 
 // Generate full URL for a location
 const url = generateLocationUrl(5)
-// Result: "https://yoursite.com/#/0lsmqxg01g"
+// Result: "https://yoursite.com/#/6trgpq5r0g"
 ```
 
 The encoding uses a hash-based approach with salt and checksum, making it:
