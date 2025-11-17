@@ -2,7 +2,6 @@ export interface Message {
   id: string
   locationId: number
   text: string
-  author?: string
   timestamp: number
 }
 
@@ -26,28 +25,21 @@ export const LOCATIONS: Location[] = [
 ]
 
 export function encodeLocationId(id: number): string {
-  const str = `qrconversations_location_${id}`
-  return btoa(str)
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '')
+  const hex = id.toString(16).padStart(2, '0')
+  return `t${hex}`
 }
 
 export function decodeLocationId(encoded: string): number | null {
   try {
-    const padded = encoded
-      .replace(/-/g, '+')
-      .replace(/_/g, '/')
-      .padEnd(encoded.length + (4 - (encoded.length % 4)) % 4, '=')
+    if (!encoded.startsWith('t')) {
+      return null
+    }
     
-    const decoded = atob(padded)
-    const match = decoded.match(/^qrconversations_location_(\d+)$/)
+    const hex = encoded.slice(1)
+    const id = parseInt(hex, 16)
     
-    if (match) {
-      const id = parseInt(match[1], 10)
-      if (id >= 1 && id <= TOTAL_LOCATIONS) {
-        return id
-      }
+    if (id >= 1 && id <= TOTAL_LOCATIONS) {
+      return id
     }
     return null
   } catch {

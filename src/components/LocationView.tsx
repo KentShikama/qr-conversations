@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useKV } from '@github/spark/hooks'
-import { Message, LOCATIONS, getLocationById } from '@/lib/locations'
+import { Message, getLocationById } from '@/lib/locations'
 import { MessageCard } from '@/components/MessageCard'
 import { MessageComposer } from '@/components/MessageComposer'
-import { TreasureHunt } from '@/components/TreasureHunt'
 import { Button } from '@/components/ui/button'
-import { MapPin, ArrowLeft } from '@phosphor-icons/react'
-import { toast } from 'sonner'
+import { ArrowLeft, Heart } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 
 interface LocationViewProps {
@@ -18,6 +16,7 @@ export function LocationView({ locationId, onBack }: LocationViewProps) {
   const location = getLocationById(locationId)
   const [messages, setMessages] = useKV<Message[]>(`messages_${locationId}`, [])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showThankYou, setShowThankYou] = useState(false)
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -27,20 +26,20 @@ export function LocationView({ locationId, onBack }: LocationViewProps) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
         <div className="text-center space-y-4">
-          <h1 className="text-2xl font-bold font-mono">Location Not Found</h1>
+          <h1 className="text-2xl font-bold">ロケーションが見つかりません</h1>
           <p className="text-muted-foreground">
-            This QR code doesn't seem to be valid. Make sure you scanned a QR Conversations code!
+            このQRコードは無効です。
           </p>
           <Button onClick={onBack} variant="outline">
             <ArrowLeft className="mr-2" />
-            Go Back
+            戻る
           </Button>
         </div>
       </div>
     )
   }
 
-  const handleSubmitMessage = async (text: string, author?: string) => {
+  const handleSubmitMessage = async (text: string) => {
     setIsSubmitting(true)
     
     try {
@@ -48,19 +47,13 @@ export function LocationView({ locationId, onBack }: LocationViewProps) {
         id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         locationId,
         text,
-        author,
         timestamp: Date.now(),
       }
 
       setMessages((current) => [...(current || []), newMessage])
-      
-      toast.success('Message posted!', {
-        description: 'Your message has been added to this location.',
-      })
+      setShowThankYou(true)
     } catch (error) {
-      toast.error('Failed to post message', {
-        description: 'Please try again.',
-      })
+      console.error(error)
     } finally {
       setIsSubmitting(false)
     }
@@ -70,62 +63,77 @@ export function LocationView({ locationId, onBack }: LocationViewProps) {
     ? messages[messages.length - 1] 
     : null
 
+  if (showThankYou) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          className="text-center space-y-6 max-w-md"
+        >
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+          >
+            <Heart size={80} weight="fill" className="text-accent mx-auto" />
+          </motion.div>
+          
+          <div className="space-y-3">
+            <h1 className="text-3xl font-bold">メッセージを残しました</h1>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              あなたのメッセージを次の方に届けます。
+            </p>
+          </div>
+
+          <Button 
+            onClick={onBack} 
+            variant="outline"
+            size="lg"
+            className="mt-8"
+          >
+            <ArrowLeft className="mr-2" />
+            ホームに戻る
+          </Button>
+        </motion.div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen">
-      <div className="max-w-3xl mx-auto p-6 space-y-6">
-        <Button onClick={onBack} variant="ghost" className="mb-4">
+      <div className="max-w-2xl mx-auto p-6 space-y-8">
+        <Button onClick={onBack} variant="ghost" size="sm">
           <ArrowLeft className="mr-2" />
-          Back
+          戻る
         </Button>
 
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-2"
-        >
-          <div className="flex items-center gap-3">
-            <MapPin className="text-accent" size={32} weight="fill" />
-            <h1 className="text-3xl font-bold font-mono">Location #{location.id}</h1>
-          </div>
-          <p className="text-muted-foreground text-lg">
-            Read the last message and reply to continue the conversation.
-          </p>
-        </motion.div>
+        <div className="space-y-6">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-3"
+          >
+            <h2 className="text-xl font-bold">前の人のメッセージ</h2>
+            
+            {!lastMessage ? (
+              <div className="bg-card border border-border rounded-lg p-8 text-center">
+                <p className="text-muted-foreground">
+                  まだメッセージがありません。最初の一人になりましょう！
+                </p>
+              </div>
+            ) : (
+              <MessageCard message={lastMessage} index={0} />
+            )}
+          </motion.div>
 
-        <TreasureHunt currentLocationId={locationId} />
-
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold">Last Message</h2>
-          
-          {!lastMessage ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="bg-card border border-border rounded-lg p-8 text-center"
-            >
-              <p className="text-muted-foreground">
-                No messages yet. Be the first to leave one!
-              </p>
-            </motion.div>
-          ) : (
-            <MessageCard message={lastMessage} index={0} />
-          )}
+          <MessageComposer
+            locationId={locationId}
+            onSubmit={handleSubmitMessage}
+            isSubmitting={isSubmitting}
+          />
         </div>
-
-        <div className="space-y-2">
-          <h2 className="text-xl font-bold">Your Reply</h2>
-          <p className="text-sm text-muted-foreground">
-            {lastMessage 
-              ? `Reply to ${lastMessage.author || 'the previous visitor'}` 
-              : 'Start the conversation'}
-          </p>
-        </div>
-
-        <MessageComposer
-          locationId={locationId}
-          onSubmit={handleSubmitMessage}
-          isSubmitting={isSubmitting}
-        />
       </div>
     </div>
   )
