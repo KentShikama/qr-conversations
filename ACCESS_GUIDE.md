@@ -9,7 +9,7 @@ This is your landing page that explains the concept.
 
 ## 📍 Location Pages
 
-Location pages use **encoded URLs** to prevent people from guessing sequential locations. Here's how to access them:
+Location pages use **encoded URLs** to make them slightly less obvious. Here's how to access them:
 
 ### Format
 `/#/{encoded_location_id}`
@@ -18,24 +18,23 @@ Location pages use **encoded URLs** to prevent people from guessing sequential l
 
 Here are the encoded URLs for all 10 locations:
 
-1. **Location #1:** `/#/cXJjb252ZXJzYXRpb25zX2xvY2F0aW9uXzE`
-2. **Location #2:** `/#/cXJjb252ZXJzYXRpb25zX2xvY2F0aW9uXzI`
-3. **Location #3:** `/#/cXJjb252ZXJzYXRpb25zX2xvY2F0aW9uXzM`
-4. **Location #4:** `/#/cXJjb252ZXJzYXRpb25zX2xvY2F0aW9uXzQ`
-5. **Location #5:** `/#/cXJjb252ZXJzYXRpb25zX2xvY2F0aW9uXzU`
-6. **Location #6:** `/#/cXJjb252ZXJzYXRpb25zX2xvY2F0aW9uXzY`
-7. **Location #7:** `/#/cXJjb252ZXJzYXRpb25zX2xvY2F0aW9uXzc`
-8. **Location #8:** `/#/cXJjb252ZXJzYXRpb25zX2xvY2F0aW9uXzg`
-9. **Location #9:** `/#/cXJjb252ZXJzYXRpb25zX2xvY2F0aW9uXzk`
-10. **Location #10:** `/#/cXJjb252ZXJzYXRpb25zX2xvY2F0aW9uXzEw`
+1. **Location #1:** `/#/t01`
+2. **Location #2:** `/#/t02`
+3. **Location #3:** `/#/t03`
+4. **Location #4:** `/#/t04`
+5. **Location #5:** `/#/t05`
+6. **Location #6:** `/#/t06`
+7. **Location #7:** `/#/t07`
+8. **Location #8:** `/#/t08`
+9. **Location #9:** `/#/t09`
+10. **Location #10:** `/#/t0a`
 
 ### What These URLs Encode
-Each encoded string is the base64 encoding of:
-- Location 1: `qrconversations_location_1`
-- Location 2: `qrconversations_location_2`
-- etc.
+Each encoded string uses hexadecimal notation prefixed with 't':
+- Location 1: `t` + `01` (hex) = `t01`
+- Location 10: `t` + `0a` (hex) = `t0a`
 
-This makes the URLs non-obvious but predictable if you know the pattern.
+This makes the URLs short and slightly obfuscated.
 
 ---
 
@@ -61,10 +60,10 @@ The admin button on the home page is **intentionally hidden** (it's a tiny invis
 To test the app locally, open these URLs in your browser:
 
 ```
-http://localhost:5173/                                              → Home page
-http://localhost:5173/#/cXJjb252ZXJzYXRpb25zX2xvY2F0aW9uXzE          → Location #1
-http://localhost:5173/#/cXJjb252ZXJzYXRpb25zX2xvY2F0aW9uXzI          → Location #2
-http://localhost:5173/#/admin                                        → Admin dashboard
+http://localhost:5173/          → Home page
+http://localhost:5173/#/t01     → Location #1
+http://localhost:5173/#/t02     → Location #2
+http://localhost:5173/#/admin   → Admin dashboard
 ```
 
 ---
@@ -76,17 +75,14 @@ If you need to generate URLs programmatically or create QR codes:
 ```javascript
 // The encoding function (already in your codebase at src/lib/locations.ts)
 function encodeLocationId(id) {
-  const str = `qrconversations_location_${id}`
-  return btoa(str)
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '')
+  const hex = id.toString(16).padStart(2, '0')
+  return `t${hex}`
 }
 
 // Example: Generate URL for location 5
 const encoded = encodeLocationId(5)
 const url = `https://yoursite.com/#/${encoded}`
-// Result: https://yoursite.com/#/cXJjb252ZXJzYXRpb25zX2xvY2F0aW9uXzU
+// Result: https://yoursite.com/#/t05
 ```
 
 ---
