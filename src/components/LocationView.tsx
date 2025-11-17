@@ -4,7 +4,7 @@ import { Message, getLocationById } from '@/lib/locations'
 import { MessageCard } from '@/components/MessageCard'
 import { MessageComposer } from '@/components/MessageComposer'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Heart } from '@phosphor-icons/react'
+import { ArrowLeft, Heart, ClockCounterClockwise } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 
 interface LocationViewProps {
@@ -17,6 +17,7 @@ export function LocationView({ locationId, onBack }: LocationViewProps) {
   const [messages, setMessages] = useKV<Message[]>(`messages_${locationId}`, [])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showThankYou, setShowThankYou] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -127,6 +128,34 @@ export function LocationView({ locationId, onBack }: LocationViewProps) {
               <MessageCard message={lastMessage} index={0} />
             )}
           </motion.div>
+
+          {messages && messages.length > 1 && (
+            <div className="space-y-3">
+              <Button
+                onClick={() => setShowHistory(!showHistory)}
+                variant="outline"
+                size="sm"
+                className="w-full"
+              >
+                <ClockCounterClockwise className="mr-2" />
+                {showHistory ? '履歴を非表示' : `過去のメッセージを見る (${messages.length - 1}件)`}
+              </Button>
+
+              {showHistory && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-3"
+                >
+                  {messages.slice(0, -1).reverse().map((message, index) => (
+                    <MessageCard key={message.id} message={message} index={index} />
+                  ))}
+                </motion.div>
+              )}
+            </div>
+          )}
 
           <MessageComposer
             locationId={locationId}
