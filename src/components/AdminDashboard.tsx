@@ -58,10 +58,6 @@ export function AdminDashboard({ onExit }: AdminDashboardProps) {
     )
   }
 
-  const totalMessages = Object.values(allMessages).reduce((sum, msgs) => sum + msgs.length, 0)
-
-  return (
-    <div className="min-h-screen p-6">
       <div className="max-w-6xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
