@@ -12,7 +12,7 @@ function App() {
   const [currentLocationId, setCurrentLocationId] = useState<number | null>(null)
 
   useEffect(() => {
-    const hash = window.location.hash.slice(1)
+    const hash = window.location.hash.slice(1).replace(/\/$/, '')
     
     if (hash.startsWith('/admin')) {
       setCurrentView('admin')
@@ -32,7 +32,7 @@ function App() {
     }
 
     const handleHashChange = () => {
-      const newHash = window.location.hash.slice(1)
+      const newHash = window.location.hash.slice(1).replace(/\/$/, '')
       
       if (newHash.startsWith('/admin')) {
         setCurrentView('admin')

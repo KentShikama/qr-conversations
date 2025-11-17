@@ -16,6 +16,8 @@ Location pages use **encoded URLs** that are not immediately sequential. Here's 
 
 Each encoded ID is a 10-character hash that uniquely identifies a location without revealing its sequence number.
 
+**Note:** Trailing slashes are automatically handled, so both `/#/6trgpq500e` and `/#/6trgpq500e/` will work.
+
 ### Example URLs for Testing
 
 Here are the encoded URLs for all 10 locations:
