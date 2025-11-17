@@ -9,37 +9,37 @@ This is your landing page that explains the concept.
 
 ## 📍 Location Pages
 
-Location pages use **encoded URLs** that are not immediately sequential. Here's how to access them:
+Location pages use **encoded URLs** that are simple base64-encoded IDs with a 'q' prefix. Here's how to access them:
 
 ### Format
-`/#/{encoded_location_id}`
+`/#/q{base64_encoded_id}`
 
-Each encoded ID is a 10-character hash that uniquely identifies a location without revealing its sequence number.
+Each encoded ID uses base64 encoding prefixed with 'q' to make it less obvious and harder to guess sequentially.
 
-**Note:** Trailing slashes are automatically handled, so both `/#/6trgpq500e` and `/#/6trgpq500e/` will work.
+**Note:** Trailing slashes are automatically handled, so both `/#/qMQ` and `/#/qMQ/` will work.
 
 ### Example URLs for Testing
 
 Here are the encoded URLs for all 10 locations:
 
-1. **Location #1:** `/#/6trgpq500e`
-2. **Location #2:** `/#/6trgpq5c0i`
-3. **Location #3:** `/#/6trgpq5h0f`
-4. **Location #4:** `/#/6trgpq5m0m`
-5. **Location #5:** `/#/6trgpq5r0g`
-6. **Location #6:** `/#/6trgpq5w0n`
-7. **Location #7:** `/#/6trgpq6h0h`
-8. **Location #8:** `/#/6trgpq6m0o`
-9. **Location #9:** `/#/6trgpq6r0i`
-10. **Location #10:** `/#/6trgpq6v0k`
+1. **Location #1:** `/#/qMQ`
+2. **Location #2:** `/#/qMg`
+3. **Location #3:** `/#/qMw`
+4. **Location #4:** `/#/qNA`
+5. **Location #5:** `/#/qNQ`
+6. **Location #6:** `/#/qNg`
+7. **Location #7:** `/#/qNw`
+8. **Location #8:** `/#/qOA`
+9. **Location #9:** `/#/qOQ`
+10. **Location #10:** `/#/qMTA`
 
 ### What These URLs Encode
 Each encoded string is generated using:
-- A hash of the location ID combined with a salt
-- A checksum for validation
-- Base36 encoding for compact representation
+- Base64 encoding of the location ID number
+- A 'q' prefix for obfuscation
+- Removal of padding characters (=) for cleaner URLs
 
-This makes the URLs harder to guess sequentially while remaining shareable.
+This makes the URLs harder to guess sequentially while remaining compact and shareable.
 
 ---
 
@@ -66,8 +66,9 @@ To test the app locally, open these URLs in your browser:
 
 ```
 http://localhost:5173/                  → Home page
-http://localhost:5173/#/6trgpq500e      → Location #1
-http://localhost:5173/#/6trgpq5c0i      → Location #2
+http://localhost:5173/#/qMQ             → Location #1
+http://localhost:5173/#/qMg             → Location #2
+http://localhost:5173/#/qNA             → Location #4
 http://localhost:5173/#/admin           → Admin dashboard
 ```
 
@@ -83,17 +84,18 @@ import { encodeLocationId, generateLocationUrl } from '@/lib/locations'
 
 // Generate encoded ID for a location
 const encoded = encodeLocationId(5)
-// Result: "6trgpq5r0g"
+// Result: "qNQ"
 
 // Generate full URL for a location
 const url = generateLocationUrl(5)
-// Result: "https://yoursite.com/#/6trgpq5r0g"
+// Result: "https://yoursite.com/#/qNQ"
 ```
 
-The encoding uses a hash-based approach with salt and checksum, making it:
-- **Non-sequential:** Can't guess location 2 from location 1
+The encoding uses simple base64 with a prefix, making it:
+- **Non-obvious:** Not immediately apparent it's just a number
 - **Validated:** Invalid codes are rejected
-- **Compact:** Only 10 characters long
+- **Compact:** Only 2-4 characters long
+- **Simple:** Easy to encode/decode programmatically
 
 ---
 
