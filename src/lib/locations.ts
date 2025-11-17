@@ -24,23 +24,37 @@ export const LOCATIONS: Location[] = [
   { id: 10 },
 ]
 
+const HASH_SALT = 'qr_tokyo_2024'
+
+function simpleHash(input: string): string {
+  let hash = 0
+  for (let i = 0; i < input.length; i++) {
+    const char = input.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash
+  }
+  return Math.abs(hash).toString(36).padStart(8, '0').slice(0, 8)
+}
+
 export function encodeLocationId(id: number): string {
-  const hex = id.toString(16).padStart(2, '0')
-  return `t${hex}`
+  const baseStr = `${HASH_SALT}_${id}`
+  const hash = simpleHash(baseStr)
+  const checksum = ((id * 7 + 13) % 97).toString(36).padStart(2, '0')
+  return `${hash}${checksum}`
 }
 
 export function decodeLocationId(encoded: string): number | null {
   try {
-    if (!encoded.startsWith('t')) {
+    if (encoded.length !== 10) {
       return null
     }
     
-    const hex = encoded.slice(1)
-    const id = parseInt(hex, 16)
-    
-    if (id >= 1 && id <= TOTAL_LOCATIONS) {
-      return id
+    for (let id = 1; id <= TOTAL_LOCATIONS; id++) {
+      if (encodeLocationId(id) === encoded) {
+        return id
+      }
     }
+    
     return null
   } catch {
     return null
